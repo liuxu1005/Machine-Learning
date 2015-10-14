@@ -1,0 +1,31 @@
+hw2 comp 135
+Xu Liu
+
+
+Experiment 1,  train on different size for smooth = 0/1
+
+for both ibmmac data and sport data:
+1)Accuracy for smooth = 0 is much worse than for smooth = 1;
+
+2)Accuracy for botho smooth = 0 and smooth = 1 are increasing as train set size grows;
+
+I think that's because larger train set provide more information for classifying; and
+smoothing avoid we make decision only according to 1 features.
+
+3)Stand deviation for smooth = 1  is decreasing as train set size grows;
+  the trend for smooth = 0 is increasing as train set size grows although not obvious;
+Probably it because without smoothing, one odd feature would lead us to wrong direction.
+
+
+
+Experiment 2,  train on changing smooth:
+
+for both ibmmac data and sport data:
+
+1)when smooth is larger than 1, the accuracy is decreasing as smooth grows;
+ the stand deviation is increasing as smooth grows;
+Probably because over-smoothing will magnify the effects of low frequency features too much.
+
+2)when smooth is between 0 and 1, there is no obvious trend although it increases accuracy
+ by avoiding decision from only one odd feature.  The effects of smooth between 0 and 1 
+ don't distinguish from each other much.

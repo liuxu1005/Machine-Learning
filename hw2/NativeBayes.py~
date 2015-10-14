@@ -1,0 +1,51 @@
+# Project 2  comp 135
+# Xu Liu
+
+import sys
+import numpy as np
+import math
+import random
+import argparse
+
+ 
+ 
+    
+
+def readIndex(file) :
+    src = open(file)
+    space = []
+    line = src.readline()
+  
+    while line != '':
+        tmp = line.split('|')
+        space.append([tmp[0], tmp[1]])
+        line = src.readline()
+    src.close()
+    return space  
+
+def straitify(space, k):
+    #class yes
+    cly = []
+    #class no
+    cln = []
+    for e in space:
+        if e[1] == 'yes':
+            cly.append(e)
+        else:
+            cln.append(e)
+    cly = np.random.permutation(cly)
+    cln = np.random.permutation(cln)
+    for i in range(k):
+        
+  
+    
+ 
+                
+    
+if __name__ == '__main__':
+    space = readIndex("./ibmmac/index.Full")
+    straitify(space, 1) 
+ 
+   
+        
+    

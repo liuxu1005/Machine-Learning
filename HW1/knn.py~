@@ -14,10 +14,7 @@ import argparse
 def knn(data, k, w):
     candidate = [[float("inf"), 0]]
     instances = len(data)
-    tpos = 0
-    fpos = 0
-    tneg = 0
-    fneg = 0
+    
     pos_in = 0
     
     #check how many instances are 1.
@@ -25,7 +22,10 @@ def knn(data, k, w):
         pos_in = pos_in + ins[-1]        
     #classify every instance
     for target in data :
-        
+        tpos = 0
+        fpos = 0
+        tneg = 0
+        fneg = 0
         #find k nearest neighours for the target
         for others in data:
             if target == others:
