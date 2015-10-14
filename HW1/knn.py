@@ -68,28 +68,33 @@ def relief(train, m):
         else:
             zeroset.append(inst)
     weight = np.zeros(len(train[0]))
-    posN = [float("inf"), 0]
-    negN = [float("inf"), 0]
     #repeat m times to calculate weight
     for i in range(0, m):
-        pick = train[random.randint(0, len(train) - 1)]
+        posN = [float("inf"), 0]
+        negN = [float("inf"), 0]
+        tmp = random.randint(0, len(train) - 1)
+        pick = train[tmp]
+        
         for inst in oneset:
             if (pick == inst):
                 continue
             dist = Ed(pick, inst)
             if dist < posN[0]:
                     posN = [dist, inst]
-
+        
         for inst in zeroset:
             if (pick == inst):
                 continue
             dist = Ed(pick, inst)
             if dist < negN[0]:
                 negN = [dist, inst] 
-            
-            
-        weight = weight - [abs(pick[i] - posN[1][i]) for i in range(0, len(posN[1]))] + \
-                 [abs(pick[i] - negN[1][i]) for i in range(0, len(negN[1]))]
+        tmp1 = np.absolute(np.array(pick) - np.array(posN[1]))
+        tmp2 = np.absolute(np.array(pick) - np.array(negN[1]))
+
+        if pick[-1] == 1 :
+            weight = weight - tmp1 + tmp2
+        else:
+            weight = weight - tmp2 + tmp1
     #rslt_w is the weight keeping only positive features and changing negative features
     #to 0's
     rslt_w = [weight[i] if (weight[i] > 0) else 0 for i in range(0, len(weight))]
@@ -105,8 +110,8 @@ def relief(train, m):
         for i in range(0, 14):
                 rslt_14[w_index[i][1]]= 1
         for i in range(14, len(w_index) - 1):
-                rslt_14[w_index[i][1]] = 0
-         
+                rslt_14[w_index[i][1]] = 0  
+    
     return (rslt_w, rslt_14)
 
 #calculate distance of two instances, default weight is 1    
@@ -117,7 +122,7 @@ def Ed(p1, p2, *w):
         weight = np.array(w[0])
     sqr = np.array([(p1[i] - p2[i])*(p1[i] - p2[i]) \
                        for i in range(0, len(p1))])
-    
+  
     return math.sqrt(np.dot(sqr[0: -1], weight[0:-1].T))
     
     
@@ -139,7 +144,7 @@ def readData(file) :
         data.append([float(tmp[i]) for i in range(0, len(tmp))])
         line = src.readline()
     src.close()
-    return data    
+    return data 
     
  
                 
@@ -161,7 +166,7 @@ if __name__ == '__main__':
     #result according to weight
     r_w = [0, 0, 0, 0, 0]
     test = readData(args.testfile)
-    
+  
     if(args.relk == 'a' or args.relk == 'o'):
         uniform = np.ones_like(test[0])
         r_o = knn(test, args.nb, uniform)
@@ -172,6 +177,7 @@ if __name__ == '__main__':
     out = open(args.outfile, 'a')
     #only keep accuracy for plotting
     print >> out, "Accuracy   %f  %f  %f" % (r_o[4], r_14[4], r_w[4])
+    #print("Accuracy   %f  %f  %f" % (r_o[4], r_14[4], r_w[4]))
     out.close()
 
  
