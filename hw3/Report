@@ -1,0 +1,20 @@
+
+Comp 135  Xu Liu
+
+
+3.2 Sensitivity to initialization
+
+From observation on graphs of CS and NMI over initialization,
+1) CS and NMI are stable across multiple initializations,
+   they are not sensitive to whatever initializations;
+2) Basically, The data set with good CS will also get good NMI;
+   however, which extent the agreement can achieve depends on data set.
+   The agreement extents may vary over different data set.
+
+3.3 Selecting k
+
+From observation on graphs of CS over different k,
+we can see as k grows from 1, the CS decrease quickly first until
+it reaches certain point, and then will decrease slow.
+Although the trend is not necessarily very obvious for each data set
+, it is still there. We can use CS as a reference for choosing k. 
