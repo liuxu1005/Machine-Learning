@@ -1,0 +1,38 @@
+
+Readme for hw 4 comp 135 Xu Liu
+
+This submit includes  
+        perceptron.py which is a python program
+        test which is script
+        README
+        Report
+        
+1. test
+script for test additional files
+test lines for homework data files is commented
+
+to run :  just type ./test
+
+has been changed mod to executable file by chmod +x ./test
+if not runnable please do chmod again.
+
+2. perceptron.py
+
+It needs two arguments: -t for test data file
+                       -T for train data file
+It print out accuracy of knn and perceptron to stand out.
+
+When  run,  it  output  two  lines,  each with 9 numbers 
+giving the accuracies for k-NN (firrst line) and perceptron (second line) 
+in the order:  primal, polynomial kernel (d = 1,2,3,4,5), RBF kernel with
+(s = 0.1,0.5,1)
+                       
+for example,  
+        python perceptron.py -T ./ATrain.arff -t ./ATest.arff 
+        
+ will calculate ATrain.arff and ATest.arff in current folder.  
+
+3. Report   
+   Result and observation.  
+                           
+

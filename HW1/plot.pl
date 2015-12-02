@@ -8,33 +8,7 @@ $train = "_train_norm.arff";
 $test = "_test_norm.arff";
 
 
-open(out, ">>temp");
-
-#J48 from weka
-for($index = 14; $index <= 94; $index += 10)
-{
-    #print out `java -classpath $CLASSPATH:/r/aiml/ml-software/weka-3-6-11/weka.jar  weka.classifiers.trees.J48  -t ./$index$train -T ./$index$test | grep Correctly | tail -1`;
-
-}
-close out;
-
-#3 kinds of knn with k = 5 
-for($index = 14; $index <= 94; $index += 10)
-{
-    `python knn.py  -t ./$index$train -T ./$index$test -k 5 -o output_5 -rt 5000 -rk a`;
-}
-
-#3 kinds of knn with k = 1 
-for($index = 14; $index <= 94; $index += 10)
-{
-    `python knn.py  -t ./$index$train -T ./$index$test -k 1 -o output_1 -rt 5000 -rk a`;
-}
-
-#m effects for 94 features
-for($index = 100; $index <= 1000 ; $index += 100)
-{
-   `python knn.py  -t ./94_train_norm.arff -T ./94_test_norm.arff -k 5 -o output_m -rt $index -rk w`;
-}
+ 
 
 #plotting
 open(my $GP,'| gnuplot');

@@ -1,0 +1,17 @@
+
+
+def test(f, arg):
+    (f[0])(arg)
+    f[1](arg)
+
+def test1(arg):
+    print arg*arg
+
+def test2(arg):
+    print arg + arg
+
+testfun = [test1, test2]
+
+
+
+test(test1, 4)

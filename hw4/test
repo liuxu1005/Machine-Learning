@@ -1,0 +1,14 @@
+#hw4 Xu Liu comp 135
+#script for test additional files
+#test for homework data files is commented
+#
+# to run :  just type ./test
+#  has used chmod +x ./test
+#  if not runnable, please do chmod again
+#
+
+#python perceptron.py -T ./data/ATrain.arff -t ./data/ATest.arff
+#python perceptron.py -T ./data/BTrain.arff -t ./data/BTest.arff
+#python perceptron.py -T ./data/backTrain.arff -t ./data/backTest.arff
+#python perceptron.py -T ./data/sonarTrain.arff -t ./data/sonarTest.arff
+python perceptron.py -T ./additionalTraining.arff -t ./additionalTest.arff

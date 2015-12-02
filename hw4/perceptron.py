@@ -1,0 +1,273 @@
+#
+#hw4 comp135
+#Xu Liu
+#
+import math
+import numpy
+import argparse
+
+class classifier:
+    def __init__(self, train, test):
+        #train set data
+        self.datatrain = self.readData(train)
+        #test set data
+        self.datatest = self.readData(test)
+        #knn accuracy
+        self.knn_acc = []
+        #perceptron accuracy
+        self.per_acc = []
+        
+    #read in data set
+    def readData(self, filename):
+        data = []
+        src = open(filename)
+        line = src.readline()
+        
+        while line[: 5] != "@DATA":
+            line = src.readline()
+        line = src.readline()
+        
+        while line != '':
+            tmp = line.strip().split(',')
+            data.append([float(tmp[i]) for i in range(len(tmp))]) 
+            line = src.readline() 
+        src.close()
+        return data
+        
+    #calculate tau
+    def tau(self):
+        tau = {}
+        tau["primal"] = self.tau_helper()
+        tau["poly1"] = self.tau_helper(self.polynomial, 1)
+        tau["poly2"] = self.tau_helper(self.polynomial, 2)
+        tau["poly3"] = self.tau_helper(self.polynomial, 3)
+        tau["poly4"] = self.tau_helper(self.polynomial, 4)
+        tau["poly5"] = self.tau_helper(self.polynomial, 5)
+        tau["rbf1"] = self.tau_helper(self.rbf, 0.1)
+        tau["rbf2"] = self.tau_helper(self.rbf, 0.5)
+        tau["rbf3"] = self.tau_helper(self.rbf, 1)
+        return tau
+
+    #helper function for calculating tau
+    #when no kernel function, use primal, otherwise use kernel function 
+    def tau_helper(self, kernelf = None, d = None):
+        n = len(self.datatrain)
+        summ = 0.0
+        if kernelf == None:
+            for i in range(n) :
+                #add 1 for primal
+                tmp = numpy.dot(numpy.array(self.datatrain[i][0:-1]), \
+                    numpy.array(self.datatrain[i][0:-1]).T) + 1 
+                summ = summ + math.sqrt(tmp)
+            summ = summ/(10*n)
+        else:
+            for i in range(n) :
+                summ = summ + math.sqrt(kernelf(self.datatrain[i],\
+                                 self.datatrain[i], d))
+            summ = summ/(10*n)
+        return summ
+    
+    #knn classifier
+    def knn(self):
+        self.knn_acc.append(self.knncl(self.distance))
+        self.knn_acc.append(self.knncl(self.distance, self.polynomial, 1))
+        self.knn_acc.append(self.knncl(self.distance, self.polynomial, 2))
+        self.knn_acc.append(self.knncl(self.distance, self.polynomial, 3))
+        self.knn_acc.append(self.knncl(self.distance, self.polynomial, 4))
+        self.knn_acc.append(self.knncl(self.distance, self.polynomial, 5))
+        self.knn_acc.append(self.knncl(self.distance, self.rbf, 0.1))
+        self.knn_acc.append(self.knncl(self.distance, self.rbf, 0.5))
+        self.knn_acc.append(self.knncl(self.distance, self.rbf, 1))
+    #knn helper function
+    #when no kernel function, use primal, otherwise use kernel function
+    def knncl(self, distancef, kernelf = None, d = None):
+        tp = 0
+        tn = 0
+        sizet = len(self.datatest)
+        sizetr = len(self.datatrain)
+        if kernelf == None:
+            for i in range(sizet):
+                distance = float("inf")
+                sign = 0
+                for j in range(sizetr): 
+                    tmp = distancef(self.datatest[i], self.datatrain[j])
+                    if (tmp < distance):
+                        distance = tmp
+                        sign = self.datatrain[j][-1]
+                        
+                if self.datatest[i][-1] == sign:
+                    if sign == 1:
+                        tp = tp + 1
+                    else:
+                        tn = tn + 1
+              
+        else:
+            for i in range(sizet):
+                distance = float("inf")
+                sign = 0
+                for j in range(sizetr):
+                    tmp = distancef(self.datatest[i], self.datatrain[j],\
+                                                             kernelf, d)
+                    if (tmp < distance):
+                        distance = tmp
+                        sign = self.datatrain[j][-1]
+                         
+                if self.datatest[i][-1] == sign:
+                    if sign == 1:
+                        tp = tp + 1
+                    else:
+                        tn = tn + 1  
+        return float(tp + tn)/sizet
+             
+            
+    def perceptron(self):
+        tau = self.tau()
+        self.per_acc.append(self.percl(tau["primal"]))
+        self.per_acc.append(self.percl(tau["poly1"], self.polynomial, 1))
+        self.per_acc.append(self.percl(tau["poly2"], self.polynomial, 2))
+        self.per_acc.append(self.percl(tau["poly3"], self.polynomial, 3))
+        self.per_acc.append(self.percl(tau["poly4"], self.polynomial, 4))
+        self.per_acc.append(self.percl(tau["poly5"], self.polynomial, 5))
+        self.per_acc.append(self.percl(tau["rbf1"], self.rbf, 0.1))
+        self.per_acc.append(self.percl(tau["rbf2"], self.rbf, 0.5))
+        self.per_acc.append(self.percl(tau["rbf3"], self.rbf, 1))
+        
+    #perceptron helper function
+    #when no kernel function, use primal, otherwise use kernel function
+    def percl(self, tau, kernelf = None, d = None):
+        tp = 0
+        tn = 0
+        sizet = len(self.datatest)
+        sizetr = len(self.datatrain)
+        sign = 0
+        if kernelf == None:
+            weight = self.alpha(tau)
+            for i in range(sizet):
+                tmpdata = self.datatest[i][:]
+                #for primal, add a feature 1
+                tmpdata[-1] = 1.0
+                tmp = numpy.dot(numpy.array(weight), \
+                      numpy.array(tmpdata).T)
+                #decide label 
+                if tmp >= 0 : 
+                    sign = 1.0
+                else:
+                    sign = -1.0
+                #count true positive and negative 
+                if self.datatest[i][-1] == sign:
+                    if sign == 1.0:
+                        tp = tp + 1
+                    else:
+                        tn = tn + 1
+        else:
+            alphas = self.alpha(tau, kernelf, d)
+            for i in range(sizet):
+                tmp = 0
+                for j in range(sizetr): 
+                    tmp1 = kernelf(self.datatest[i], self.datatrain[j], d) \
+                    * self.datatrain[j][-1] * alphas[j]
+                    tmp = tmp + tmp1
+                #decide label
+                if tmp >= 0 : 
+                    sign = 1.0
+                elif tmp < 0:
+                    sign = -1.0
+                
+                #count true positive and true negative
+                if self.datatest[i][-1] == sign:
+                    if sign == 1.0:
+                        tp = tp + 1
+                    else:
+                        tn = tn + 1
+        return float(tp + tn)/sizet       
+
+           
+    #calculate alphas for perceptron and weight for knn
+    def alpha(self, tau, kernelf = None, d = None):
+        weight = []
+        if kernelf == None:
+            weight = numpy.zeros(len(self.datatrain[0])).tolist()
+            for i in range(50):
+                size = len(self.datatrain)
+                for j in range(size):
+                    tmpdata = self.datatrain[j][:]
+                    #for primal add a feature 1
+                    tmpdata[-1] = 1.0
+                    tmp = numpy.dot(numpy.array(weight), \
+                          numpy.array(tmpdata).T)
+                    sign = self.datatrain[j][-1]
+                    #update weight
+                    if tmp * sign < tau:
+                        weight = [weight[h] + sign * tmpdata[h]\
+                        for h in range(len(weight))]
+                           
+        else:
+            size = len(self.datatrain)
+            weight = numpy.zeros(size).tolist()
+            for i in range(50): 
+                for j in range(size):
+                    tmp = 0
+                    for k in range(size):
+                        tmp = tmp + \
+                        kernelf(self.datatrain[j], self.datatrain[k], d) *\
+                        weight[k] * self.datatrain[k][-1]
+                    #update alpha
+                    if tmp * self.datatrain[j][-1] < tau:
+                        weight[j] = weight[j] + 1
+        return weight
+        
+    #polynomial kernel           
+    def polynomial(self, instance1, instance2, d):
+        tmp = numpy.dot(numpy.array(instance1[0:-1]), \
+                    numpy.array(instance2[0:-1]).T) + 1 
+        return tmp**d
+        
+    #rbf kernel
+    def rbf(self, instance1, instance2, s):
+        tmp = numpy.array(instance1[0:-1]) - numpy.array(instance2[0:-1])
+        tmp = numpy.dot(tmp, tmp)/(0 - 2*s*s)
+        return math.e**tmp
+
+    #distance for knn
+    #when no kernel function, use norm
+    #otherwise use kernel
+    def distance(self, instance1, instance2, kernelf = None, d = None):
+        tmp = 0
+        if kernelf == None:
+            tmp = (numpy.array(instance1[0:-1]) - \
+                    numpy.array(instance2[0:-1]))
+            tmp = numpy.dot(tmp, tmp)   
+        else:
+            tmp = kernelf(instance1, instance1, d) + \
+                  kernelf(instance2, instance2, d) - \
+                  2 * kernelf(instance1, instance2, d)
+        return math.sqrt(tmp)
+
+    def output_knn(self):
+        #print '   '.join(['%0.2f' % n for n in self.knn_acc]) 
+        print self.knn_acc
+
+    def output_perceptron(self):
+        #print '   '.join(['%0.2f' % n for n in self.per_acc]) 
+        print self.per_acc
+
+if __name__ == '__main__':
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--test", action="store",\
+                        dest="testfile", required=True)
+    parser.add_argument("-T", "--train", action="store",\
+                        dest="trainfile", required=True)
+     
+    args = parser.parse_args()
+    
+    mypctr = classifier(args.trainfile, args.testfile)
+    mypctr.knn()
+    mypctr.output_knn()
+    mypctr.perceptron()
+    mypctr.output_perceptron()
+
+
+    
+    
+
