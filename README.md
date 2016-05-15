@@ -11,7 +11,9 @@ Content involved:
                                
    Unsupervised learning: 
    
-                  clustering algorithms; generative probabilistic models; the EM algorithm; association rules.
+                  clustering algorithms; generative probabilistic models; the EM algorithm; 
+                  
+                  association rules.
 
    Theory: 
    
@@ -19,7 +21,9 @@ Content involved:
 
    More supervised learning: 
    
-                  neural networks; backpropagation; dual perceptron; kernel methods; support vector machines.
+                  neural networks; backpropagation; dual perceptron; kernel methods; 
+                  
+                  support vector machines.
    
    Additional topics selected from: 
    
